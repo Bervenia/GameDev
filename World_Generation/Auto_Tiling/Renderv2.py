@@ -1,7 +1,7 @@
 import pyglet
 from random import randint
 import json
-#import cardspritev2 as sprite
+
 class Render():
     def __init__(self,game):
         self.game = game
@@ -47,7 +47,6 @@ class Render():
             
     def check_neighbor(self, level, x, y, x_off, y_off):
         if self.boundary_check(len(level),x+x_off,y+y_off):
-            #print('hi')
             if x_off == 0 or y_off == 0:#N,E,S,W
                 if level[y+y_off][x+x_off] == level[y][x]:
                     return True
@@ -99,6 +98,8 @@ class Render():
                     if self.check_neighbor(level,j,i, 1, 1): tile_value += 128#SE
                     tile = image[self.value_to_tile[tile_value]]
                     sprites.append(pyglet.sprite.Sprite(img = tile,x= x_pos, y = y_pos, batch = self.game.bg_batch))
+                elif transition[0] > 1:
+                    pass
         return sprites
                 
                 
