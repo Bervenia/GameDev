@@ -206,12 +206,9 @@ class Render():
         for i in range(4):
             
             sub_tile_value = self.neighbors(i,level,y,x,mask)
-            
             if sub_tile_value[-1] != -1:
                 if sub_tile_value[0] == None or sub_tile_value[1] == None:
-                    
                     sub_tile = self.game.assets[max([i for i in sub_tile_value[:-1] if i is not None])].get_region(self.tile_size*sub_tile_value[-1]+(self.tile_size//2*(i%2)),64+(self.tile_size//2*((i)//2)),self.tile_size//2,self.tile_size//2)
-                    
                 elif sub_tile_value[0] != None and sub_tile_value[1] != None:#vert and horizontal
                     if sub_tile_value[0] >= sub_tile_value[1]:
                         sub_tile = self.game.assets[sub_tile_value[0]].get_region(self.tile_size*sub_tile_value[-1]+(self.tile_size//2*(i%2)),64+(self.tile_size//2*((i)//2)),self.tile_size//2,self.tile_size//2)
@@ -219,16 +216,9 @@ class Render():
                         sub_tile = self.game.assets[sub_tile_value[1]].get_region(self.tile_size*sub_tile_value[-1]+(self.tile_size//2*(i%2)),64+(self.tile_size//2*((i)//2)),self.tile_size//2,self.tile_size//2)
         
                 image = image_data
-                #print("f",image_data)
                 original = image.get_image_data()
                 image.blit_into(sub_tile.get_image_data(),(self.tile_size//2*((i)%2)),(self.tile_size//2*((3-i)//2)),0)
-                #print(image_data)
                 image_data = self.blend_transparent(image,original)
-
-                #image_data[x][y].blit_into(sub_tile,self.tile_size*(z%self.chunk_size)+(self.tile_size//2*((i)%2)),self.tile_size*(z//self.chunk_size)+(self.tile_size//2*((3-i)//2)),0)
-                #image_data[x][y].blit_into(sub_tile,self.tile_size*(z%self.chunk_size),self.tile_size*(z//self.chunk_size),0)
-                #image_data[x][y].blit_into(sub_tile,0,0,0)
-            #print(image_data)
         return image_data
                 
     def blend_transparent(self,image,original):

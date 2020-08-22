@@ -60,7 +60,7 @@ class Banner(Overlay):
     @classmethod    
     def delete_instance(cls,instance,):
         cls.instances.remove(instance)
-        
+    
 
 class Menu(Overlay):
     instances = []
@@ -73,7 +73,7 @@ class Menu(Overlay):
                                             y= y,
                                             anchor_x='center',
                                             anchor_y='center')
-
+    """
     def reset(self):
         self.selected_index = 0
         self.items[self.selected_index].selected = True
@@ -96,3 +96,4 @@ class Menu(Overlay):
         self.title_text.draw()
         for i, item in enumerate(self.items):
             item.draw(i == self.selected_index)
+    """

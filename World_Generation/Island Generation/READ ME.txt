@@ -1,0 +1,8 @@
+Andrew Middleton
+
+This is a island generation program based off a perlin noise height map.
+in order to to run this program you will need both pyglet and noise 
+
+Install:
+-pip install pyglet 
+-pip install noise
