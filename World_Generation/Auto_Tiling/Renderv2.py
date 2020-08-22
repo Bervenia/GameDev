@@ -1,5 +1,5 @@
 import pyglet
-from random import randint
+import random
 import json
 
 class Render():
@@ -91,6 +91,7 @@ class Render():
     def auto_tile_region(self, level, x, y, width, height,auto_tile = False):
         sprites = []
         # loop through level looking at neighbors of
+        random.seed(a = 24)
         for i in range(y,height):
             for j in range(x,width):
                 x_pos = ((j)*self.tile_size)
@@ -100,7 +101,8 @@ class Render():
                     transition = [0,level[i][j]]
                 if transition[0] == 0:
                     image = self.game.assets[level[i][j]]
-                    val = randint(0,image.width//self.tile_size-1)
+                    n = max((image.width//self.tile_size),1)
+                    val = random.choices([i for i in range(n)],weights =[80-min(i,1)*65 for i in range(n)])[0]
                     tile = image.get_region(val*self.tile_size,0,self.tile_size,self.tile_size)
                     sprite = pyglet.sprite.Sprite(img = tile,x= x_pos, y = y_pos, batch = self.game.bg_batch)
                     sprites.append(sprite)
@@ -116,7 +118,7 @@ class Render():
                     else:
                         transition[1].sort()
                         grid = self.game.assets[level[i][j]+transition[1][0]]
-                        base_value = self.get_tile_value(level,j,i,transition[1][0])
+                        base_value = self.get_tile_value(level,j,i,transition[1][0])# add transition[1][0]
                         image = grid[self.value_to_tile[base_value]]
                         image = image.get_image_data().get_texture()
                         for tile in range(len(transition[1])-1):                        
@@ -124,6 +126,7 @@ class Render():
                         tile = pyglet.resource.get_texture_bins()[-1].add(image)
                         self.game.assets[transition[2]] = tile
                         sprites.append(pyglet.sprite.Sprite(img = tile,x= x_pos, y = y_pos, batch = self.game.bg_batch))   
+        random.seed(a = None)
         return sprites
 
     def neighbors(self,direction,level, y,x,mask):

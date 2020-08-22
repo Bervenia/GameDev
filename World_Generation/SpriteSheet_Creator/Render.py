@@ -8,7 +8,7 @@ class Render():
         self.level = './directions/30.txt'
         self.chunk_size = 16
         self.tile_size = 64
-        
+        self.sprite_name = 'GrasstoStone.png'
         self.sheet = self.sprite_sheet()
 
 
@@ -52,7 +52,7 @@ class Render():
                             sheet.blit_into(new_image[0],((len(temp) %8) * self.tile_size),abs((len(temp)//8))* self.tile_size,0)
                             temp.append('1')
                             #sheet = pyglet.resource.get_texture_bins()[-1].add(sheet.get_image_data())
-        sheet.save('SandtoStone.png')
+        sheet.save(self.sprite_name)
         return sheet
     def flatten(self,level):
         new = []

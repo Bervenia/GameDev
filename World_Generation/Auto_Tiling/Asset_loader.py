@@ -7,14 +7,15 @@ class Asset_Loader():
         pyglet.image.Texture.default_mag_filter = gl.GL_NEAREST
         pyglet.resource.path = [".",Asset_location]
         pyglet.resource.reindex()
+        self.multi_tiles = set()
     
     def load_image(self,file_name,center_image=False,):
         image = pyglet.resource.image(file_name)
         
         if center_image:
            image = self.center_image(image)
-        gl.glEnable(gl.GL_TEXTURE_2D)
-        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
+        #gl.glEnable(gl.GL_TEXTURE_2D)
+        #gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
         return image
 
     def load_animation(self,file_name,center_animation = False,duration = None):
@@ -44,11 +45,13 @@ class Asset_Loader():
         pyglet.image.Texture.default_min_filter = gl.GL_NEAREST
         pyglet.image.Texture.default_mag_filter = gl.GL_NEAREST
         assets = {}
-        
-        assets['1'] = self.load_image("Grassx64.png",True).get_image_data() 
-        #assets['0'] = self.load_image("Stonex64.png",True).get_image_data() 
-        assets['01'] = self.load_image("GrasstoSand.png",True).get_image_data() 
-        assets['0'] = self.load_image("Sandx64.png",True).get_image_data()
+
+        assets['2'] = self.load_image("Grassx64.png",True)
+        assets['12'] = pyglet.image.TextureGrid(pyglet.image.ImageGrid(self.load_image("GrasstoSand.png",True),6,8))
+        assets['1'] = self.load_image("Sandx64.png",True)
+        assets['02'] = pyglet.image.TextureGrid(pyglet.image.ImageGrid(self.load_image("GrasstoStone.png",True),6,8))
+        assets['01'] = pyglet.image.TextureGrid(pyglet.image.ImageGrid(self.load_image("SandtoStone.png",True),6,8))
+        assets['0'] = self.load_image("Stonex64.png",True)
 
 
        

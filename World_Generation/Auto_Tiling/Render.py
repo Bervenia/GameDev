@@ -67,10 +67,8 @@ class Render():
                 chunk_img_list[i][j] = pyglet.resource.get_texture_bins()[-1].add(chunk_img_list[i][j].get_image_data())
         return chunk_img_list
 
-    def neighbors(self,d,x,y,i,v,l):
-        w = l
-        h = l
-        size = w * h
+    def neighbors(self,dirct,x,y,mask):
+        
         neighbors = []
         temp = -1
         if d == 0:
@@ -104,7 +102,6 @@ class Render():
                 neighbors.append(self.map[y][x][i+w+1])  # southeast
                 temp += 4
             else:
-                #print((i + w + 1) < size, ((i + 1) % w != 0))
                 neighbors.append(None)
         if d == 2:
             if i % w != 0 and self.map[y][x][i-1] > v:
@@ -117,8 +114,6 @@ class Render():
                 temp += 2
             else:
                 neighbors.append(None)
-
-            
             if temp == -1 and ((i - w - 1) >= 0) and (i % w != 0) and self.map[y][x][i-w-1] > v:
                 neighbors.append(self.map[y][x][i-w-1])  # northwest
                 temp += 4
@@ -140,19 +135,14 @@ class Render():
                 temp += 4
             else:
                 neighbors.append(None)
-
-                
-        
-        
         temp = min(temp,3)
         neighbors.append(temp)
         return neighbors
 
     def sub_tile(self, image_data, x,y,z):
-        sel = int()
         print(image_data)
         for i in range(4):
-            temp = i
+            
             sub_tile_value = self.neighbors(i,y,x,z,self.map[x][y][z],self.chunk_size)
 
             if sub_tile_value[-1] != -1:

@@ -5,6 +5,7 @@ from pyglet.window import key
 from pyglet import gl
 from Camera import Camera
 from Asset_loader import Asset_Loader
+
 from Renderv2 import Render
 import ui_module as ui
 
@@ -16,12 +17,13 @@ class Game(pyglet.window.Window):
         self.asset_loader = Asset_Loader("./Assets")
         self.assets = self.asset_loader.load()
     
-
+        self.auto = True
         self.main_batch = pyglet.graphics.Batch()
         self.bg_batch = pyglet.graphics.Batch()
         self.ui_batch = pyglet.graphics.Batch()
         self.projection = Projection2D()
         self.render = Render(self)
+        
         self.ui_banners = ui.Banner
         self.ui_menus = ui.Menu 
         ui.Banner(self,"Auto Tiling",True,True, timeout = 5)
@@ -34,11 +36,11 @@ class Game(pyglet.window.Window):
         #self.render.draw()
         
         #self.world_camera.attach(self.entity_manager.get(0))
-        self.on_draw = self.event(self.on_draw)
+        #self.on_draw = self.event(self.on_draw)
  
   #      self.game_object = []
         
-        pyglet.clock.schedule_interval(self.update,1/60)
+        pyglet.clock.schedule(self.update)
         #pyglet.clock.set_fps_limit(60)
     def remove_ui(self,ui_element, element_list):
         print(self.overlays)
@@ -65,6 +67,8 @@ class Game(pyglet.window.Window):
             self.fps.draw()
 
         with self.ui_camera:
+            
+
             for menu in self.ui_menus.instances:
                 menu.draw()
             for banner in self.ui_banners.instances:
@@ -72,9 +76,7 @@ class Game(pyglet.window.Window):
 
         
        
-    def on_mouse_motion(self,x, y, dx, dy):
-        #print("mouse x: ",x,"mouse y: ",y )
-        self.system.inject({'type': 'player_movement', 'data': ["mouse_pos",x]})
+    
     def on_mouse_press(self,x, y, button, modifiers):
         #print(button)
         if button == 4:
@@ -112,9 +114,9 @@ class Game(pyglet.window.Window):
             self.ui_module.debug_mode = not self.ui_module.debug_mode
         if symbol == key.W:
             print("swap")
-            self.bg_batch = pyglet.graphics.Batch()
-            self.draw = not self.draw
-            self.render.draw(self.draw)
+            self.auto = not self.auto
+            self.render.bg_sprites = []
+            self.render.bg_sprites = self.render.auto_tile_region(self.render.map,0,0,len(self.render.map),len(self.render.map),self.auto)
         
     def on_key_release(self,symbol, modifiers):
         pass

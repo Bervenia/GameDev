@@ -47,7 +47,7 @@ class Asset_Loader():
         
         assets['1'] = self.load_image("Grassx64.png",True).get_image_data() 
         #assets['1'] = self.load_image("Stonex64.png",True).get_image_data() 
-        assets['0'] = self.load_image("Sandx64.png",True).get_image_data()
+        assets['0'] = self.load_image("Stonex64.png",True).get_image_data().get_region(0,0,64,64)
 
 
        
