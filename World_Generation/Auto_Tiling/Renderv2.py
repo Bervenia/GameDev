@@ -6,7 +6,7 @@ class Render():
     def __init__(self,game):
         self.game = game
         self.level = 'test.txt'
-        self.chunk_size = 3
+        #self.chunk_size = 4
         self.tile_size = 64
         self.value_to_tile = {
             2:1, 8:2, 10:3, 11:4, 16:5, 18:6, 22:7, 24:8, 26:9, 27:10, 30:11, 31:12,
@@ -52,14 +52,14 @@ class Render():
     def check_neighbor(self, level, x, y, x_off, y_off,mask = None):
         if self.boundary_check(len(level),x+x_off,y+y_off):
             if x_off == 0 or y_off == 0:#N,E,S,W
-                if level[y+y_off][x+x_off] == level[y][x] or level[y+y_off][x+x_off] != mask:
+                if level[y+y_off][x+x_off] <= level[y][x] or (mask != None and level[y+y_off][x+x_off] != mask):
                     return True
                 else:
                     return False
             else:#NW,NE,SW,SE
-                check_1 = level[y+y_off][x+x_off] == level[y][x] or level[y+y_off][x+x_off] != mask
-                check_2 = level[y+y_off][x] == level[y][x] or level[y+y_off][x] != mask
-                check_3 = level[y][x+x_off] == level[y][x] or level[y][x+x_off] != mask
+                check_1 = level[y+y_off][x+x_off] <= level[y][x] or (mask != None and level[y+y_off][x+x_off] != mask)
+                check_2 = level[y+y_off][x] <= level[y][x] or (mask != None and level[y+y_off][x] != mask)
+                check_3 = level[y][x+x_off] <= level[y][x] or (mask != None and level[y][x+x_off] != mask)
                 if (check_1 and check_2 and check_3):
                     return True
                 else: 
@@ -67,8 +67,8 @@ class Render():
         else:#border
             boundary_x = self.boundary_check(len(level),x+x_off,y)
             boundary_y = self.boundary_check(len(level),x,y+y_off)
-            tile_check_x = (level[y][x+x_off] == level[y][x] or level[y][x+x_off] != mask)
-            tile_check_y = (level[y+y_off][x] == level[y][x] or level[y+y_off][x] != mask)
+            tile_check_x = boundary_x and (level[y][x+x_off] <= level[y][x] or (mask != None and level[y][x+x_off] != mask))
+            tile_check_y = boundary_y and (level[y+y_off][x] <= level[y][x] or (mask != None and level[y+y_off][x] != mask))
             check_1 = (x_off == 0 or y_off == 0)#vertical or horizontal
             check_2 = (not boundary_y and not boundary_x)#corner with vert and horz out of bounds 
             check_3 = not boundary_y and (boundary_x and tile_check_x)#corner with vert out of bounds
@@ -95,7 +95,6 @@ class Render():
             for j in range(x,width):
                 x_pos = ((j)*self.tile_size)
                 y_pos = ((height-i)*self.tile_size)
-                
                 transition = self.check_neighbor_types(level,j,i)
                 if auto_tile == False:
                     transition = [0,level[i][j]]
@@ -110,22 +109,27 @@ class Render():
                     tile_value = self.get_tile_value(level,j,i)
                     tile = image[self.value_to_tile[tile_value]]
                     sprites.append(pyglet.sprite.Sprite(img = tile,x= x_pos, y = y_pos, batch = self.game.bg_batch))
-                elif transition[0] > 1:
+                elif transition[0] > 1:                    
                     if transition[2] in self.game.assets:
-                        self.game.assets[transition[2]]
+                        tile = self.game.assets[transition[2]]
+                        sprites.append(pyglet.sprite.Sprite(img = tile,x= x_pos, y = y_pos, batch = self.game.bg_batch))
                     else:
-                        base_image = self.game.assets[level[i][j]+transition[1][0]]
+                        transition[1].sort()
+                        grid = self.game.assets[level[i][j]+transition[1][0]]
                         base_value = self.get_tile_value(level,j,i,transition[1][0])
-                        tile = base_image[self.value_to_tile[base_value]]
-
-
-
+                        image = grid[self.value_to_tile[base_value]]
+                        image = image.get_image_data().get_texture()
+                        for tile in range(len(transition[1])-1):                        
+                            image = self.sub_tile(image,level,j,i, transition[1][tile+1]).get_image_data()
+                        tile = pyglet.resource.get_texture_bins()[-1].add(image)
+                        self.game.assets[transition[2]] = tile
+                        sprites.append(pyglet.sprite.Sprite(img = tile,x= x_pos, y = y_pos, batch = self.game.bg_batch))   
         return sprites
 
-    def neighbors(self,direction,level, x,y,mask):
+    def neighbors(self,direction,level, y,x,mask):
         neighbors = []
         temp = -1
-        if direction == 0:
+        if direction == 2:
             if self.boundary_check(len(level),x-1,y) and level[y][x-1] == mask:
                 neighbors.append(level[y][x-1])  # west
                 temp += 1
@@ -141,7 +145,7 @@ class Render():
                 temp += 4
             else:
                 neighbors.append(None)
-        if direction == 1:
+        if direction == 3:
             if self.boundary_check(len(level),x+1,y) and level[y][x+1] == mask:
                 neighbors.append(level[y][x+1])  # east
                 temp += 1
@@ -157,7 +161,7 @@ class Render():
                 temp += 4
             else:
                 neighbors.append(None)
-        if direction == 2:
+        if direction == 0:
             if self.boundary_check(len(level),x-1,y) and level[y][x-1] == mask:
                 neighbors.append(level[y][x-1])  # west
                 temp += 1
@@ -173,7 +177,7 @@ class Render():
                 temp += 4
             else:
                 neighbors.append(None)
-        if direction == 3:
+        if direction == 1:
             if self.boundary_check(len(level),x+1,y) and level[y][x+1] == mask:
                 neighbors.append(level[y][x+1])  # east
                 temp += 1
@@ -192,7 +196,62 @@ class Render():
         temp = min(temp,3)
         neighbors.append(temp)
         return neighbors
+   
+        
+    def sub_tile(self, image_data,level, x,y,mask):
+        #print(image_data)
+        for i in range(4):
+            
+            sub_tile_value = self.neighbors(i,level,y,x,mask)
+            
+            if sub_tile_value[-1] != -1:
+                if sub_tile_value[0] == None or sub_tile_value[1] == None:
+                    
+                    sub_tile = self.game.assets[max([i for i in sub_tile_value[:-1] if i is not None])].get_region(self.tile_size*sub_tile_value[-1]+(self.tile_size//2*(i%2)),64+(self.tile_size//2*((i)//2)),self.tile_size//2,self.tile_size//2)
+                    
+                elif sub_tile_value[0] != None and sub_tile_value[1] != None:#vert and horizontal
+                    if sub_tile_value[0] >= sub_tile_value[1]:
+                        sub_tile = self.game.assets[sub_tile_value[0]].get_region(self.tile_size*sub_tile_value[-1]+(self.tile_size//2*(i%2)),64+(self.tile_size//2*((i)//2)),self.tile_size//2,self.tile_size//2)
+                    else:
+                        sub_tile = self.game.assets[sub_tile_value[1]].get_region(self.tile_size*sub_tile_value[-1]+(self.tile_size//2*(i%2)),64+(self.tile_size//2*((i)//2)),self.tile_size//2,self.tile_size//2)
+        
+                image = image_data
+                #print("f",image_data)
+                original = image.get_image_data()
+                image.blit_into(sub_tile.get_image_data(),(self.tile_size//2*((i)%2)),(self.tile_size//2*((3-i)//2)),0)
+                #print(image_data)
+                image_data = self.blend_transparent(image,original)
+
+                #image_data[x][y].blit_into(sub_tile,self.tile_size*(z%self.chunk_size)+(self.tile_size//2*((i)%2)),self.tile_size*(z//self.chunk_size)+(self.tile_size//2*((3-i)//2)),0)
+                #image_data[x][y].blit_into(sub_tile,self.tile_size*(z%self.chunk_size),self.tile_size*(z//self.chunk_size),0)
+                #image_data[x][y].blit_into(sub_tile,0,0,0)
+            #print(image_data)
+        return image_data
                 
-                
+    def blend_transparent(self,image,original):
+        img_data = image.get_image_data()
+        fmt_1 = img_data.format
+        original_data = original.get_image_data()
+        fmt_2 = original_data.format
+        assert fmt_1 == fmt_2,\
+            f"Both images must have the same format. Current {fmt_1}, {fmt_2}"
+        
+        def chunker(data_1,data_2, length):
+            colors_1 = [iter(data_1)] * length
+            colors_2 = [iter(data_2)] * length
+            return zip(*colors_1,*colors_2)
+
+        orig_raw_bytes = original_data.get_data()
+        img_raw_bytes = img_data.get_data()
+        new_array = []
+        for pixels in chunker(img_raw_bytes,orig_raw_bytes,len(fmt_1)):
+            if pixels[3] == 0 and pixels[-1] == 255:
+                new_array.extend(pixels[4:8])
+            else:
+                new_array.extend(pixels[:4])
+            
+        img_data.set_data(img_data.format, 0, bytes(new_array))
+        image.blit_into(img_data, 0, 0, 0)
+        return image
 if __name__ == "__main__":
     pass
