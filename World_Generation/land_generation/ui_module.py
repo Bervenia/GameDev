@@ -26,7 +26,8 @@ class Banner(Overlay):
                                       x = game.width // 2,
                                       y = game.height *.7,
                                       anchor_x="center",
-                                      anchor_y="baseline")
+                                      anchor_y="baseline",
+                                      batch = game.ui_batch)
         self.color = list(self.text.color)
         self.timeout  = timeout
         self.fade_in  = fade_in

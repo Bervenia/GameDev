@@ -4,10 +4,11 @@ import random
 from pyglet.gl import *
 from Falloff import Falloff_Generator
 class Terrain():
-    def __init__(self,name,height,color):
+    def __init__(self,name,height,color,land_type):
         self.name = name
         self.height = height
         self.color = color
+        self.type = land_type
 
 
 class noise_map():
@@ -16,27 +17,28 @@ class noise_map():
         self.length = length
         self.half_width = width/2
         self.half_length = length/2
-        self.scale = 46
+        self.scale = 300
         self.octave = octave
         self.persistance = persistance
         self.lacunarity = lacunarity
         self.seed = 45
         self.falloff = True
-        self.color_map = []
         self.imageData =''
+      
         #                       name, height, rgb color
-        self.regions = [Terrain("Snow",1,[222,235,238]),
-                        Terrain("Rock2",.83,[72,62,52]),
-                        Terrain("Rock1",.75,[90,77,65]),
-                        Terrain("Grass2",.65,[48,99,42]),
-                        Terrain("Grass1",.55,[70,137,68]),
-                        Terrain("Sand",.45,[216,210,156]),
-                        Terrain("water shallow",.42,[80,180,205]),
-                        Terrain("water deep",.3,[10,140,180]),
-                        ]
+        self.regions = [Terrain("Rock2",1,[72,62,52],0),
+                        Terrain("Rock1",.65,[90,77,65],0),
+                        Terrain("Grass2",.60,[48,99,42],2),
+                        Terrain("Grass1",.55,[70,137,68],2),
+                        Terrain("Sand",.45,[216,210,156],1),
+                        Terrain("water shallow",.42,[80,180,205],3),
+                        Terrain("water deep",.3,[10,140,180],3)]   
+                        
+
     def make_map(self):
         """create a collored hight map"""
-        self.color_map = []
+        color_map = []
+        level =[["" for j in range(self.width)] for i in range(self.length)]
         if self.falloff:
             mask = Falloff_Generator(self.width,self.length).island()
         for x in range(self.width):
@@ -45,12 +47,12 @@ class noise_map():
                 if self.falloff:#coment out to remove island gen
                     val = val-mask[x][y]
                 #color = self.get_monochrome(val)
-                color = self.get_color(val)
-                self.color_map += color
+                color,terrain = self.get_color(val)
+                color_map += color
                 
-        self.rawData = (pyglet.gl.GLubyte * len(self.color_map))(*self.color_map)
+        self.rawData = (pyglet.gl.GLubyte * len(color_map))(*color_map)
         self.imageData = pyglet.image.ImageData(self.width, self.length, 'RGB', self.rawData)                                                                                                                                                              
-        return self.imageData                                                 
+        return level, self.imageData                                                 
         
     def make_mask(self):
         """genrate the island fall of map and return it"""
@@ -88,7 +90,9 @@ class noise_map():
         for i in range(len(self.regions)):
             if val <= self.regions[i].height:
                 color = self.regions[i].color
-        return color
+                terrain = self.regions[i].type
+
+        return color,terrain
     
 if __name__ == "__main__":
     import pyglet
@@ -105,7 +109,9 @@ if __name__ == "__main__":
     octave = 4
     persistance = .5
     lacunarity = 2
-    level = noise_map(100,100,octave,persistance,lacunarity)
+    level = noise_map(500,500,octave,persistance,lacunarity)
+    level.make_map()
+    #print(level[0][0])
     @window.event
     def on_draw():
         global imageData
@@ -139,7 +145,6 @@ if __name__ == "__main__":
             level.scale -=1
             level.make_map()
         
-                       
-    level.make_map()
+
     pyglet.app.run()
 
