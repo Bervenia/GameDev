@@ -4,8 +4,10 @@ from pyglet.window import key
 from pyglet import gl
 from Camera import Camera
 from Asset_loader import Asset_Loader
-from Renderv2 import Render
+from land_generator import noise_map
+from Renderv3 import Render
 import ui_module as ui
+import Scenes
 
 class Game(pyglet.window.Window):
     def __init__(self):
@@ -19,6 +21,8 @@ class Game(pyglet.window.Window):
         self.ui_batch = pyglet.graphics.Batch()
         self.projection = Projection2D()
         self.render = Render(self)
+        self.scene_manager = Scenes.Scene_Manager(self)
+        self.scene_manager.change_scene(Scenes.Overworld(self))
         
         self.ui_banners = ui.Banner
         self.ui_menus = ui.Menu 
@@ -37,18 +41,24 @@ class Game(pyglet.window.Window):
             banner.update(dt) 
         self.world_camera.update()
         self.ui_camera.update()
+        self.scene_manager.update()
 
     def on_draw(self):
         self.clear()
         with self.world_camera:
-            self.main_batch.draw()
-            self.bg_batch.draw()
+            self.scene_manager.draw()
+            #self.main_batch.draw()
+            #self.bg_batch.draw()
             self.fps.draw()
         with self.ui_camera:
             self.ui_batch.draw()
 
     def on_mouse_press(self,x, y, button, modifiers):
-        pass
+        if button == 4:
+            print("kill")
+            rel_x = x#+self.world_camera.offset_x *self.world_camera.zoom
+            rel_y = y#+self.world_camera.offset_y *self.world_camera.zoom
+            self.world_camera.position = (rel_x,rel_y)
     def on_key_press(self,symbol,modifiers):
         pass
     def on_key_release(self,symbol, modifiers):

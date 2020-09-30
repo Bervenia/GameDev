@@ -7,8 +7,8 @@ class Render():
         self.game = game
         self.level = './directions/30.txt'
         self.chunk_size = 16
-        self.tile_size = 64
-        self.sprite_name = 'GrasstoStone.png'
+        self.tile_size = 32
+        self.sprite_name = 'GrasstoStonex32.png'
         self.sheet = self.sprite_sheet()
 
 
@@ -30,6 +30,7 @@ class Render():
         files = self.order_files(files)
         temp = []
         sheet = pyglet.image.Texture.create(width = self.tile_size*8, height =self.tile_size*6)
+        print("sheet",sheet.width,sheet.height)
         for file in files:
             self.level = file
             self.map = self.flatten(self.get_level())
@@ -42,13 +43,16 @@ class Render():
                     if j+i*3 == 4:
                         self.game.assets = self.game.asset_loader.load()
                         image = self.game.assets[level[i][j]]
+                        print("image",image.width,image.height)
                         if level[i][j] == '1':
                                 image = image.get_region(self.tile_size*(randint(0,3)),0,self.tile_size,self.tile_size)
+
                         new_image =self.sub(image.get_texture(),j+i*3)
                         if new_image[1] == 4:
 
-                            print((len(temp) %8),abs((len(temp)//8)),len(temp),file)
+                            #print((len(temp) %8),abs((len(temp)//8)),len(temp),file)
                             #if abs((len(temp)//5)) != 8:
+                            print(new_image[0].width,new_image[0].height)
                             sheet.blit_into(new_image[0],((len(temp) %8) * self.tile_size),abs((len(temp)//8))* self.tile_size,0)
                             temp.append('1')
                             #sheet = pyglet.resource.get_texture_bins()[-1].add(sheet.get_image_data())
@@ -154,6 +158,7 @@ class Render():
         return neighbors
     def sub(self, image_data,y):
         image_data = image_data.get_texture()
+        print(image_data.width,image_data.height,"here")
         sel = int()
         #print(y,self.map[y],self.chunk_size)
         for i in range(4):
@@ -165,12 +170,12 @@ class Render():
             if sub_tile_value[-1] != -1 :
                 if sub_tile_value[0] == None or sub_tile_value[1] == None:
                     
-                    sub_tile = self.game.assets[max([i for i in sub_tile_value[:-1] if i is not None])].get_region(self.tile_size*sub_tile_value[-1]+(self.tile_size//2*(i%2)),64+(self.tile_size//2*((i)//2)),self.tile_size//2,self.tile_size//2)
+                    sub_tile = self.game.assets[max([i for i in sub_tile_value[:-1] if i is not None])].get_region(self.tile_size*sub_tile_value[-1]+(self.tile_size//2*(i%2)),32+(self.tile_size//2*((i)//2)),self.tile_size//2,self.tile_size//2)
                 elif sub_tile_value[0] != None and sub_tile_value[1] != None:#vert and horizontal
                     if sub_tile_value[0] >= sub_tile_value[1]:
-                        sub_tile = self.game.assets[sub_tile_value[0]].get_region(self.tile_size*sub_tile_value[-1]+(self.tile_size//2*(i%2)),64+(self.tile_size//2*((i)//2)),self.tile_size//2,self.tile_size//2)
+                        sub_tile = self.game.assets[sub_tile_value[0]].get_region(self.tile_size*sub_tile_value[-1]+(self.tile_size//2*(i%2)),32+(self.tile_size//2*((i)//2)),self.tile_size//2,self.tile_size//2)
                     else:
-                        sub_tile = self.game.assets[sub_tile_value[1]].get_region(self.tile_size*sub_tile_value[-1]+(self.tile_size//2*(i%2)),64+(self.tile_size//2*((i)//2)),self.tile_size//2,self.tile_size//2)
+                        sub_tile = self.game.assets[sub_tile_value[1]].get_region(self.tile_size*sub_tile_value[-1]+(self.tile_size//2*(i%2)),32+(self.tile_size//2*((i)//2)),self.tile_size//2,self.tile_size//2)
                 image = image_data
                 #print("here",image.width,image.height,sub_tile.width,sub_tile.height)
                 original = image.get_image_data()

@@ -45,7 +45,7 @@ class Asset_Loader():
         pyglet.image.Texture.default_min_filter = gl.GL_NEAREST
         pyglet.image.Texture.default_mag_filter = gl.GL_NEAREST
         assets = {}
-
+        assets['3'] = self.load_image("Waterx64.png",True)
         assets['2'] = self.load_image("Grassx64.png",True)
         assets['12'] = pyglet.image.TextureGrid(pyglet.image.ImageGrid(self.load_image("GrasstoSand.png",True),6,8))
         assets['1'] = self.load_image("Sandx64.png",True)

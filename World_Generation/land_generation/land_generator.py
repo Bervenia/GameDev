@@ -1,18 +1,18 @@
 import pyglet
 from noise import snoise3
 import random
-
+import time
 
 
 class noise_map():
-    def __init__(self,width,height,octave,persistance,lacunarity):
+    def __init__(self,width,height,seed, octave =4,persistance=.5,lacunarity=2):
         self.width = width
         self.height = height
         self.octave = octave
         self.persistance = persistance
         self.lacunarity = lacunarity
         self.scale = 300
-        self.seed = 45
+        self.seed = seed
         self.terrain ={
             1:["0",[72,62,52]]     , .6:["2",[70,137,68]],
             .45:["1",[216,210,156]], .42:["3",[80,180,205]]
@@ -26,6 +26,8 @@ class noise_map():
         half_width = self.width//2
         half_height = self.height//2
         for y in range(self.height):
+            if y % (204) == 0:
+                print(y // 204)
             for x in range(self.width):
                 val = self.norm(snoise3((y-half_height)/self.scale,
                                         (x-half_width)/self.scale,
@@ -75,6 +77,9 @@ class Falloff_Generator():
          return val**a/(val**a +(b-b*val)**a)
 
 if __name__ == "__main__":
+    start_time = time.time()
+# your code
+
     window = pyglet.window.Window(1000,1000,vsync=False)
     fps_display = pyglet.window.FPSDisplay(window)
     fps_display.label.color = (255, 255, 0, 255)
@@ -83,10 +88,12 @@ if __name__ == "__main__":
     octave = 4
     persistance = .5
     lacunarity = 2
-    world = noise_map(500,500,octave,persistance,lacunarity)
+    world = noise_map(2048,2048,45,octave,persistance,lacunarity)
     level, mini_map = world.make_map()
     sprite = pyglet.sprite.Sprite(img = mini_map, x = 0, y = 0, batch=batch)
-    sprite.scale = 2
+    elapsed_time = time.time() - start_time
+    print('done! took',elapsed_time, "seconds.")
+    sprite.scale = .25
     @window.event
     def on_draw():
         window.clear()

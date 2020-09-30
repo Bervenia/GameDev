@@ -45,9 +45,9 @@ class Asset_Loader():
         pyglet.image.Texture.default_mag_filter = gl.GL_NEAREST
         assets = {}
         
-        assets['1'] = self.load_image("Grassx64.png",True).get_image_data() 
+        assets['1'] = self.load_image("Grassx32.png",True).get_image_data() 
         #assets['1'] = self.load_image("Stonex64.png",True).get_image_data() 
-        assets['0'] = self.load_image("Stonex64.png",True).get_image_data().get_region(0,0,64,64)
+        assets['0'] = self.load_image("Stonex32.png",True).get_image_data().get_region(0,0,32,32)
 
 
        
