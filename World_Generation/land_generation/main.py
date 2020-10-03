@@ -13,25 +13,25 @@ class Game(pyglet.window.Window):
     def __init__(self):
         super(Game, self).__init__(1280,740, resizable=False,config =  pyglet.gl.Config(double_buffer = True,depth_size =24),vsync = False,
                                    fullscreen=False, caption="arena",)
+        #engine parameters                                   
+        self.on_draw = self.event(self.on_draw)
+        self.projection = Projection2D()     
+        self.fps = pyglet.window.FPSDisplay(self)   
+
+        #graphics and view ports     
         self.asset_loader = Asset_Loader("./Assets")
         self.assets = self.asset_loader.load()
-    
-        self.main_batch = pyglet.graphics.Batch()
-        self.bg_batch = pyglet.graphics.Batch()
         self.ui_batch = pyglet.graphics.Batch()
-        self.projection = Projection2D()
         self.render = Render(self)
         self.scene_manager = Scenes.Scene_Manager(self)
-        self.scene_manager.change_scene(Scenes.Overworld(self))
-        
-        self.ui_banners = ui.Banner
-        self.ui_menus = ui.Menu 
-        ui.Banner(self,"Overworld",True,True, timeout = 5)
         self.world_camera = Camera((self.width,self.height))
         self.ui_camera = Camera((self.width,self.height))
-        self.fps = pyglet.window.FPSDisplay(self)
-        self.draw = False
-        
+        self.ui_banners = ui.Banner
+        self.ui_menus = ui.Menu
+
+        #start up
+        ui.Banner(self,"Overworld",True,True, timeout = 5)
+        self.scene_manager.change_scene(Scenes.Overworld(self))
         pyglet.clock.schedule(self.update)   
 
     def update(self,dt):
@@ -47,23 +47,21 @@ class Game(pyglet.window.Window):
         self.clear()
         with self.world_camera:
             self.scene_manager.draw()
-            #self.main_batch.draw()
-            #self.bg_batch.draw()
             self.fps.draw()
         with self.ui_camera:
             self.ui_batch.draw()
 
     def on_mouse_press(self,x, y, button, modifiers):
-        if button == 4:
-            print("kill")
-            rel_x = x#+self.world_camera.offset_x *self.world_camera.zoom
-            rel_y = y#+self.world_camera.offset_y *self.world_camera.zoom
+        if button == 4:#right click
             self.world_camera.position = (rel_x,rel_y)
+
     def on_key_press(self,symbol,modifiers):
         pass
+
     def on_key_release(self,symbol, modifiers):
         pass
     
+
 class Projection2D(pyglet.window.Projection):
     """A 2D orthographic projection"""
     def set(self, window_width, window_height, viewport_width, viewport_height):
