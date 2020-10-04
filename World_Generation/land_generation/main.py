@@ -31,7 +31,7 @@ class Game(pyglet.window.Window):
 
         #start up
         ui.Banner(self,"Overworld",True,True, timeout = 5)
-        self.scene_manager.change_scene(Scenes.Overworld(self))
+        self.scene_manager.change_scene(Scenes.Overworld(self))                       
         pyglet.clock.schedule(self.update)   
 
     def update(self,dt):
