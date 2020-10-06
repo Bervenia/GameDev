@@ -1,9 +1,13 @@
-import pyglet
 import os
 import json
 import random
+
+import pyglet
+
 import land_generator
+import World
 import Renderv3
+from Config import *
 class Scene_Manager():
     _current_scene = None
     def __init__(self, window, ):
@@ -47,29 +51,35 @@ class Overworld(Scene):
     def __init__(self,window, data = None):
         super().__init__(window,"Overworld")
         self.data = data
-        self.world_settings = {} 
-        #window.main_batch = self.batch
-        self.world_settings['seed'] = 300#int(random.random() * 10**8)
-        self.world_settings['size'] = [128,128]
-    def create_level_data(self,direct):
-        data = self.world_settings
-        level = land_generator.noise_map(data['size'][0],data['size'][1],data['seed']).make_map()
-        
-        #with open(os.path.join(direct,"level.dat"),"w") as output:
-         #   json.dump(data,output)
-        return level
-    def create_world(self,level):
-        self.tiles = self.window.render.auto_tile_region(level, 0, 0,self.bg_batch,True)
+        self.position = (0,0)
+        self.current_chunk = None
+        self.seed = 300
+        self.size = (128,128)
+        self.world = World.World(self.main_batch)
+        self.on_resize(*self.window.get_size())
+        self.initialized = False
+        self.moved_camera = False
 
-        
-        print('hi there')
-        #print(self.tiles)
+    def update(self,dt):
+        if not self.initialized:
+            self.load()
+        self.world.process_queue()
+        if self.moved_camera:
+            pass
+
+    def update_shown_chunks(self,position):
+        chunk = (self.position[0] // CHUNK_SIZE, self.position[1] // CHUNK_SIZE)
+        if chunk == self.current_chunk:
+            return
+        chunks_to_show = []
+        for dy in range(-1,2):
+            for dx in range(-1,2):
+                x, y = chunk 
+                chunks_to_show.append((x + dx, y + dy))
+        self.world.show_given_chunks(chunks_to_show)
+    
+    def on_resize(self):
+        pass
     def load(self,directory = "/test_folder"):
-        if os.path.exists(directory):
-            pass#os.makedirs('my_folder')        
-        else:
-            #os.makedirs(directory)  
-            data = self.create_level_data(directory)
-            self.create_world(data[0])
-            self.mini_map = pyglet.sprite.Sprite(img = data[1], x = 0, y = -200, batch=self.bg_batch)
-
+        generator = World_Generator()
+        self.world.generator = generator
