@@ -84,7 +84,8 @@ class World():
     def update_batch_chunk(self,chunk):
         visible = chunk.position in self.shown_chunks
 
-        
+        if visible:
+            points = CHUNK_SIZE**2 * TILE_SIZE        
     def register_chunk(self, chunk):
         """Add a new chunk to the world. Request neighboring chunks if 
         chunk is in shown chunks
