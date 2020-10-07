@@ -67,7 +67,7 @@ class World():
 
     def count_tiles(self):
         """Return the number of tiles in this world"""
-        return sum([len(val.blocks) for val in self.sectors.values()])
+        return sum([len(val.blocks) for val in self.chunks.values()])
 
     @property
     def generator(self):
@@ -116,10 +116,10 @@ class World():
             #register new chunk
             if self.generator != None:
                 self.requested.add(pos)
-                self.generator.request_sector(pos)
+                self.generator.request_chunk(pos)
 
     def show_chunk(self,chunk_pos):
-        """ensure tiles within a given sector are being drawn"""
+        """ensure tiles within a given chunk are being drawn"""
         self.shown_chunks.add(chunk_pos)
         chunk = self.chunks.get(chunk_pos, None)
 
@@ -131,12 +131,12 @@ class World():
              #   return
             if self.generator != None:
                 self.requested.add(chunk_pos)
-                self.generator.request_sector(chunk_pos)
+                self.generator.request_chunk(chunk_pos)
 
         self.enqueue(self.update_batch_chunk, chunk)
 
     def hide_chunk(self, chunk_pos):
-        """Ensure tiles within a given sector are being hidden"""
+        """Ensure tiles within a given chunk are being hidden"""
         self.shown_chunks.discard(chunk_pos)
         chunk = self.chunks.get(chunk_pos,None)
         if chunk != None:
