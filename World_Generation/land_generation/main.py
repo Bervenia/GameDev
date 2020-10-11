@@ -41,16 +41,16 @@ class Game(pyglet.window.Window):
             banner.update(dt) 
         self.world_camera.update()
         self.ui_camera.update()
-        self.scene_manager.update()
+        self.scene_manager.update(dt)
 
     def on_draw(self):
         self.clear()
         with self.world_camera:
-            self.scene_manager.draw()
+            #self.scene_manager.draw()
             self.fps.draw()
         with self.ui_camera:
             self.ui_batch.draw()
-
+    
     def on_mouse_press(self,x, y, button, modifiers):
         if button == 4:#right click
             self.world_camera.position = (x, y)

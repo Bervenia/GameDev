@@ -28,14 +28,19 @@ class Chunk:
         """Maximum position(excluded) of xy tile coord"""
     
     def contains(self,pos):
-        """ Returns True if xy tile position within Chunk""" 
+        """Returns True if pos(x, y) tile position within Chunk""" 
         return (self.min_pos[0] <= pos[0] < self.max_pos[0]
                 and self.max_pos[1] <= pos[1] < self.max_pos[1])
 
     def get_tile(self, position):
         "return tile at position within Chunk. Else None"
         return self.tiles[position]
-    
+    def add_tile(self, position, tile):
+        """add a tile to this chunk so long as position is apart of chunk"""
+        if not self.contains(position):
+            return
+        self.tiles[position] = tile
+        self.check_neighbors(position)
     def check_neighbors(self,position):
         """Checks all tiles surrounding `position` and ensures their visual
         state is up to date. This means autotiling and hidding tiles. 
@@ -85,7 +90,8 @@ class World():
         visible = chunk.position in self.shown_chunks
 
         if visible:
-            points = CHUNK_SIZE**2 * TILE_SIZE        
+            points = CHUNK_SIZE**2 * TILE_SIZE
+            block = self._show        
     def register_chunk(self, chunk):
         """Add a new chunk to the world. Request neighboring chunks if 
         chunk is in shown chunks

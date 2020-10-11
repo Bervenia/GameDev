@@ -4,8 +4,10 @@ import random
 
 import pyglet
 
-import land_generator
+#import land_generator
+
 import World
+from Generators import World_Generator
 import Renderv3
 from Config import *
 class Scene_Manager():
@@ -14,9 +16,9 @@ class Scene_Manager():
         #self._current_scene = scene
         self.window = window
 
-    def update(self):
+    def update(self,dt):
         if self._current_scene:
-            self._current_scene.update()
+            self._current_scene.update(dt)
 
     def draw(self):
         if self._current_scene:
@@ -56,7 +58,7 @@ class Overworld(Scene):
         self.seed = 300
         self.size = (128,128)
         self.world = World.World(self.main_batch)
-        self.on_resize(*self.window.get_size())
+        #self.on_resize(*self.window.get_size())
         self.initialized = False
         self.moved_camera = False
 
@@ -83,3 +85,4 @@ class Overworld(Scene):
     def load(self,directory = "/test_folder"):
         generator = World_Generator()
         self.world.generator = generator
+        self.initialized = True

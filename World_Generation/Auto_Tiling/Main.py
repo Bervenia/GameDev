@@ -50,7 +50,7 @@ class Game(pyglet.window.Window):
                 menu.draw()
             for banner in self.ui_banners.instances:
                 banner.draw()
-
+    
     def on_mouse_press(self,x, y, button, modifiers):
         pass
     def on_key_press(self,symbol,modifiers):
