@@ -16,7 +16,7 @@ class Noise:
         self.persistance = persistance
         self.lacunarity = lacunarity
         self.scale = 300
-        self.seed = seed
+        self.seed = 45#seed
 
     def lerp(self, start, end, percent):
         """return a value between two points based off percentage"""
@@ -32,7 +32,7 @@ class Noise:
         """
         x_pos = (x-self.enclosure//2)/self.scale
         y_pos = (y-self.enclosure//2)/self.scale
-        val = max(min(snoise3(x,y,self.seed,self.octave,self.persistance,self.lacunarity),1),-1)
+        val = snoise3(x_pos,y_pos,self.seed,self.octave,self.persistance,self.lacunarity)
         val = self.norm(val,-.85,.85)
         return val
 
@@ -41,6 +41,9 @@ class World_Generator:
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
 
         self.callback = None
+
+        self.shown_x = []
+        self.shown_y = []
 
         self.seed = 24
         """noise seed for world"""
@@ -69,7 +72,11 @@ class World_Generator:
 
         def send_result(future):
             chunk = future.result()
+            self.shown_x.append(chunk.min_pos[0])
+            self.shown_y.append(chunk.min_pos[1])
             
+            self.shown_x.append(chunk.max_pos[0])
+            self.shown_y.append(chunk.max_pos[1])
             self.callback(chunk)
         future = self.executor.submit(self.generate, chunk)
         future.add_done_callback(send_result)
@@ -90,7 +97,24 @@ class World_Generator:
         if self.island_enable:
             self._generate_island_map(chunk)
         return chunk
-
+    def mini_map(self):
+        color_map = []
+        for y in range(min(self.shown_x),max(self.shown_x)):
+            for x in range(min(self.shown_y),max(self.shown_y)):
+                val = self._get_tile(x,y)
+                if val.name == "Grass":
+                    color_map.extend([70,137,68])
+                if val.name == "Stone":
+                    color_map.extend([90,77,65])
+                if val.name == "Sand":
+                    color_map.extend([216,210,156])
+                if val.name == "Water":
+                    color_map.extend([80,180,205])
+        rawData = (pyglet.gl.GLubyte * len(color_map))(*color_map)
+        width = max(self.shown_x) - min(self.shown_x)
+        height = max(self.shown_y) - min(self.shown_y)
+        imageData = pyglet.image.ImageData(width, height, 'RGB', rawData)                                                                                                                                                              
+        return imageData                                          
     def _generate_island_map(self,chunk):
         n = self.enclosure
 

@@ -239,3 +239,8 @@ class World():
         #print(time.perf_counter() - start < 1.0 / TICKS_PER_SEC)
         while self.queue and time.perf_counter() - start < 1.0 / TICKS_PER_SEC:
             self.dequeue()
+            if not self.queue:
+                print("done")
+                image = self.generator.mini_map()
+                self.temp = pyglet.sprite.Sprite(img = image,x= 0,y=-400,batch = self.batch)
+                self.temp.scale = 5

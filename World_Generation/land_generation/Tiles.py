@@ -35,7 +35,7 @@ class Tile:
         n = max((image.width//TILE_SIZE),1)
         val = random.choices([i for i in range(n)],weights =[80-min(i,1)*65 for i in range(n)])[0]
         tile = image.get_region(val*TILE_SIZE,0,TILE_SIZE,TILE_SIZE)
-        print(tile.tex_coords)
+        #print(tile.tex_coords)
         
         return tile.tex_coords
     

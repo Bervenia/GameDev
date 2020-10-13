@@ -58,14 +58,13 @@ class Overworld(Scene):
         self.seed = 300
         self.size = (128,128)
         self.world = World.World(self.main_batch)
-        #self.on_resize(*self.window.get_size())
         self.initialized = False
         self.moved_camera = False
 
     def update(self,dt):
         if not self.initialized:
             self.load()
-        #print("im here dad")
+        
         self.world.process_queue()
         if self.moved_camera:
             pass
