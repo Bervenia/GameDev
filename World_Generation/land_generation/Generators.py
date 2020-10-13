@@ -6,6 +6,7 @@ import random
 from noise import snoise3
 
 from Config import *
+from Tiles import *
 from World import Chunk
 
 class Noise:
@@ -55,10 +56,10 @@ class World_Generator:
         def add_terrain(height,terrain):
             self.terrain_lookup[height] = terrain
 
-        add_terrain(1,["Rock"])
-        add_terrain(.6,["Grass"])
-        add_terrain(.45,["Sand"])
-        add_terrain(.42,["Water"])
+        add_terrain(1,STONE)
+        add_terrain(.6,GRASS)
+        add_terrain(.45,SAND)
+        add_terrain(.42,WATER)
 
     def set_callback(self,callback):
         """set a new callback when a new chunk is loaded"""
@@ -68,6 +69,7 @@ class World_Generator:
 
         def send_result(future):
             chunk = future.result()
+            
             self.callback(chunk)
         future = self.executor.submit(self.generate, chunk)
         future.add_done_callback(send_result)
@@ -76,8 +78,9 @@ class World_Generator:
         """iterate over all the tiles in chunk"""
         x_min, y_min = chunk.min_pos
         x_max, y_max = chunk.max_pos
-        for x in range(y_min,y_max):
-            for y in range(x_min,x_max):
+        
+        for x in range(x_min,x_max):
+            for y in range(y_min,y_max):
                 yield x, y
 
     def generate(self,chunk):
@@ -92,16 +95,19 @@ class World_Generator:
         n = self.enclosure
 
         for x, y in self.inter_all(chunk):
+            
             if x <= -n or x >= n or y <= -n or y >= n :
                 continue
+            
             tile = self._get_tile(x,y)
+            
             chunk.add_tile((x,y),tile)
 
     def _get_tile(self,x,y):
         val = self.terrain_gen.snoise3(x,y)
         #print(val,int((val+1)*.5*len(self.terrain_lookup)))
         for i in self.terrain_lookup:
-            print(i)
+            
             if val <= i:
                 terrain = self.terrain_lookup[i]
         return terrain

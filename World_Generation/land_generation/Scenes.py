@@ -65,6 +65,7 @@ class Overworld(Scene):
     def update(self,dt):
         if not self.initialized:
             self.load()
+        #print("im here dad")
         self.world.process_queue()
         if self.moved_camera:
             pass
@@ -85,4 +86,5 @@ class Overworld(Scene):
     def load(self,directory = "/test_folder"):
         generator = World_Generator()
         self.world.generator = generator
+        self.update_shown_chunks((0,0))
         self.initialized = True

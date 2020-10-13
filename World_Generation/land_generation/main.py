@@ -3,7 +3,7 @@ from pyglet import clock
 from pyglet.window import key
 from pyglet import gl
 from Camera import Camera
-from Asset_loader import Asset_Loader
+from Asset_loader import assets
 from land_generator import noise_map
 from Renderv3 import Render
 import ui_module as ui
@@ -18,13 +18,13 @@ class Game(pyglet.window.Window):
         self.projection = Projection2D()     
         self.fps = pyglet.window.FPSDisplay(self)   
 
-        #graphics and view ports     
-        self.asset_loader = Asset_Loader("./Assets")
-        self.assets = self.asset_loader.load()
+        #graphics and view ports
+        self.assets = assets
         self.ui_batch = pyglet.graphics.Batch()
         self.render = Render(self)
         self.scene_manager = Scenes.Scene_Manager(self)
         self.world_camera = Camera((self.width,self.height))
+        self.world_camera.position = (0,0)
         self.ui_camera = Camera((self.width,self.height))
         self.ui_banners = ui.Banner
         self.ui_menus = ui.Menu
@@ -46,7 +46,7 @@ class Game(pyglet.window.Window):
     def on_draw(self):
         self.clear()
         with self.world_camera:
-            #self.scene_manager.draw()
+            self.scene_manager.draw()
             self.fps.draw()
         with self.ui_camera:
             self.ui_batch.draw()
