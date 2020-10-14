@@ -5,14 +5,11 @@ from pyglet.gl import *
 
 from Config import *
 from Asset_loader import assets
-def get_texture_coords(texture):
-
-    return texture.tex_coords
 
 class CustomGroup(pyglet.graphics.Group):
     def __init__(self):
         super().__init__()
-        self.texture = pyglet.resource.get_texture_bins()[0].atlases[0].texture
+        self.texture = GRASS.owner
         
     def set_state(self):
         glEnable(self.texture.target)
@@ -38,13 +35,6 @@ class Tile:
         #print(tile.tex_coords)
         
         return tile.tex_coords
-    
-
-
-#GRASS = Tile("Grass",get_texture_coords(assets['Grass']))
-#STONE = Tile("Stone",get_texture_coords(assets['Stone']))
-#SAND = Tile("Sand",get_texture_coords(assets['Sand']))
-#WATER = Tile("Water",get_texture_coords(assets['Water']))
 
 GRASS = Tile("Grass",assets['Grass'])
 STONE = Tile("Stone",assets['Stone'])
