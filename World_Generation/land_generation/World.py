@@ -65,9 +65,10 @@ class Chunk:
 
 
 class World():
-    def __init__(self, batch):
+    def __init__(self, batch,ui_batch):
         self.batch = batch 
         """pyglet.graphics batch object"""
+        self.ui_batch = ui_batch
 
         self._generator = None
         """Procedural generator"""
@@ -111,12 +112,12 @@ class World():
         """
         dx = x * TILE_SIZE
         dy = y * TILE_SIZE
-        p1= dx-n,dy-n
-        p2 = dx-n,dy+n
-        p3 = dx+n,dy+n
-        p4 = dx+n,dy-n
+        p1= dx,dy#bot-left
+        p2 = dx+n,dy#bot-right
+        p3 = dx+n,dy+n #top-right
+        p4 = dx,dy+n#top-left
         #print(dx,dy, dx+n,dy, dx+n,dy+n, dx,dy+n)
-        return(*p1,*p4,*p3,*p2)
+        return(*p1,*p2,*p3,*p4)
 
     def update_batch_chunk(self,chunk):
         random.seed(a = 24)
@@ -137,7 +138,7 @@ class World():
                 #print("tile:",tile)
                 temp = chunk.tiles[tile]
                 #print("hi",self.get_corners(*tile,TILE_SIZE//2))
-                vertex_data.extend(self.get_corners(*tile,TILE_SIZE//2))
+                vertex_data.extend(self.get_corners(*tile,TILE_SIZE))
                 texture = chunk.tiles[tile].texture_coords
                 #print(len(texture),texture)
                 texture_coords.extend(texture) 
@@ -228,7 +229,14 @@ class World():
         func, args = self.queue.popleft()
         func(*args)
         #print("my son died have you seen him?")
-
+    def mini_map(self,x,y,pos, batch):
+        #print("data",*list(self.chunks))
+        image = self.generator.mini_map(pos)
+        scale = 100/ image.width
+        x = x-image.width * scale 
+        y = y- image.height*scale 
+        self.temp = pyglet.sprite.Sprite(img = image,x= x,y=y, batch = batch)
+        self.temp.scale = scale
     def process_queue(self):
         """Process the entire queue with periodic breaks. Allowing
         the game to run smoothly avoiding the global interperter 
@@ -239,8 +247,4 @@ class World():
         #print(time.perf_counter() - start < 1.0 / TICKS_PER_SEC)
         while self.queue and time.perf_counter() - start < 1.0 / TICKS_PER_SEC:
             self.dequeue()
-            if not self.queue:
-                print("done")
-                image = self.generator.mini_map()
-                self.temp = pyglet.sprite.Sprite(img = image,x= 0,y=-400,batch = self.batch)
-                self.temp.scale = 5
+            

@@ -27,11 +27,13 @@ class Scene_Manager():
 
 
     @classmethod
-    def change_scene(cls,new_scene):
+    def change_scene(cls,win,new_scene):
         if cls._current_scene != None:
             cls._current_scene.unload()
         new_scene.load()
+        
         cls._current_scene = new_scene
+        win.push_handlers(cls._current_scene)
 
 class Scene():
     def __init__(self, window, name):
@@ -57,7 +59,7 @@ class Overworld(Scene):
         self.current_chunk = None
         self.seed = 300
         self.size = (128,128)
-        self.world = World.World(self.main_batch)
+        self.world = World.World(self.main_batch,self.window.ui_batch)
         self.initialized = False
         self.moved_camera = False
 
@@ -66,24 +68,45 @@ class Overworld(Scene):
             self.load()
         
         self.world.process_queue()
+      
         if self.moved_camera:
-            pass
+            cam_pos = self.window.world_camera.position
+            tile_pos = (cam_pos[0]//TILE_SIZE,cam_pos[1]//TILE_SIZE)
+            chunk = (int(tile_pos[0]/CHUNK_SIZE),int(tile_pos[1]/CHUNK_SIZE))
+            print(chunk,self.current_chunk)
+            self.update_shown_chunks(tile_pos)
+
+            self.current_chunk = chunk
+            self.position = tile_pos
+            self.world.mini_map(self.window.width,self.window.height,self.position,self.window.ui_batch)
+            print("movement")
+            self.moved_camera = False
 
     def update_shown_chunks(self,position):
-        chunk = (self.position[0] // CHUNK_SIZE, self.position[1] // CHUNK_SIZE)
+        chunk = (int(position[0] // CHUNK_SIZE), int(position[1] // CHUNK_SIZE))
+        #print(chunk)
         if chunk == self.current_chunk:
+            print("the same")
             return
         chunks_to_show = []
         for dy in range(-1,2):
             for dx in range(-1,2):
                 x, y = chunk 
                 chunks_to_show.append((x + dx, y + dy))
+        print(chunks_to_show)
         self.world.show_given_chunks(chunks_to_show)
     
-    def on_resize(self):
-        pass
     def load(self,directory = "/test_folder"):
         generator = World_Generator()
         self.world.generator = generator
-        self.update_shown_chunks((0,0))
+        self.update_shown_chunks(self.position)
+        self.world.mini_map(self.window.width,self.window.height,self.position,self.window.ui_batch)
         self.initialized = True
+
+    
+    def on_mouse_press(self,x, y, button, modifiers):
+        if button == 4:#right click
+            self.window.world_camera.position = (x, y)
+            pos = self.window.world_camera.position
+            print(pos,(pos[0]//64,pos[1]//64))
+            self.moved_camera = True

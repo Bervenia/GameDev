@@ -13,7 +13,7 @@ ASSET_PATH = "./Assets"
 TICKS_PER_SEC = 60
 
 #Size of chucks
-CHUNK_SIZE = 32
+CHUNK_SIZE = 8
 
 #Size of tile
 TILE_SIZE = 64

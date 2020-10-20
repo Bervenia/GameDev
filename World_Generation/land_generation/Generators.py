@@ -85,7 +85,7 @@ class World_Generator:
         """iterate over all the tiles in chunk"""
         x_min, y_min = chunk.min_pos
         x_max, y_max = chunk.max_pos
-        
+        print("pos",chunk.min_pos,chunk.max_pos)
         for x in range(x_min,x_max):
             for y in range(y_min,y_max):
                 yield x, y
@@ -97,10 +97,15 @@ class World_Generator:
         if self.island_enable:
             self._generate_island_map(chunk)
         return chunk
-    def mini_map(self):
+    def mini_map(self,pos):
         color_map = []
-        for y in range(min(self.shown_x),max(self.shown_x)):
-            for x in range(min(self.shown_y),max(self.shown_y)):
+        x_min = int(pos[0] - CHUNK_SIZE)
+        x_max = int(pos[0] + CHUNK_SIZE)
+        y_min = int(pos[1] - CHUNK_SIZE)
+        y_max = int(pos[1] + CHUNK_SIZE)
+        print(x_max - x_min, y_max - y_min)
+        for y in range(y_min,y_max):
+            for x in range(x_min,x_max):
                 val = self._get_tile(x,y)
                 if val.name == "Grass":
                     color_map.extend([70,137,68])
@@ -111,8 +116,8 @@ class World_Generator:
                 if val.name == "Water":
                     color_map.extend([80,180,205])
         rawData = (pyglet.gl.GLubyte * len(color_map))(*color_map)
-        width = max(self.shown_x) - min(self.shown_x)
-        height = max(self.shown_y) - min(self.shown_y)
+        width = x_max - x_min
+        height = y_max - y_min
         imageData = pyglet.image.ImageData(width, height, 'RGB', rawData)                                                                                                                                                              
         return imageData                                          
     def _generate_island_map(self,chunk):
@@ -128,12 +133,14 @@ class World_Generator:
             chunk.add_tile((x,y),tile)
 
     def _get_tile(self,x,y):
+        
         val = self.terrain_gen.snoise3(x,y)
         #print(val,int((val+1)*.5*len(self.terrain_lookup)))
         for i in self.terrain_lookup:
             
             if val <= i:
                 terrain = self.terrain_lookup[i]
+        #print(x,y,terrain.name)
         return terrain
         
 if __name__ == "__main__":

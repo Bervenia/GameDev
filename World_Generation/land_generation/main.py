@@ -31,7 +31,7 @@ class Game(pyglet.window.Window):
 
         #start up
         ui.Banner(self,"Overworld",True,True, timeout = 5)
-        self.scene_manager.change_scene(Scenes.Overworld(self))
+        self.scene_manager.change_scene(self,Scenes.Overworld(self))
         pyglet.clock.schedule(self.update)   
 
     def update(self,dt):
@@ -50,10 +50,9 @@ class Game(pyglet.window.Window):
             self.fps.draw()
         with self.ui_camera:
             self.ui_batch.draw()
+            #print("draw")
     
-    def on_mouse_press(self,x, y, button, modifiers):
-        if button == 4:#right click
-            self.world_camera.position = (x, y)
+  
 
     def on_key_press(self,symbol,modifiers):
         pass

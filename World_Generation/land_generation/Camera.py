@@ -24,17 +24,18 @@ class Camera:
     @property
     def position(self):
         """Query the current offset."""
-        return self.offset_x, self.offset_y
+
+        return self.offset_x +self.half_screen[0], self.offset_y+self.half_screen[1]
 
     @position.setter
     def position(self, value):
         """Set the scroll offset directly."""
-        print(self.attached_entity)
+        #print(self.attached_entity)
         if self.attached_entity != None:
             self.offset_x = int(self.attached_entity.position.x - self.half_screen[0])
             self.offset_y = int(self.attached_entity.position.y - self.half_screen[1])
         else:
-            print("value", value,value[0] - self.half_screen[0],value[1] - self.half_screen[1] )
+            #print("value", value,value[0] - self.half_screen[0],value[1] - self.half_screen[1] )
             self.offset_x = int(value[0]+self.offset_x - self.half_screen[0])
             self.offset_y = int(value[1]+self.offset_y - self.half_screen[1])
     def attach(self,entity):
