@@ -5,7 +5,7 @@ import random
 import pyglet 
 from Asset_loader import assets
 from Config import *
-from Tiles import CustomGroup
+
 
 def iter_neighbors(position):
     """iterate through position neighboring given position"""
@@ -42,11 +42,9 @@ class Chunk:
         
     def add_tile(self, position, tile):
         """add a tile to this chunk so long as position is apart of chunk"""
-        #print(position, self.position,self.min_pos,self.max_pos,self.contains(position))
-        #print(self.min_pos[0] <= position[0] < self.max_pos[0],self.min_pos[1] <= position[1] < self.max_pos[1])
         if not self.contains(position):
             return
-        #print("added tile")
+       
         self.tiles[position] = tile
         self.check_neighbors(position)
     def empty(self,pos):
@@ -60,6 +58,7 @@ class Chunk:
                 continue
             else:
                 tile = self.get_tile(neighbor)
+                #print("tile",tile)
                 #if tile.current == False:
                  #   tile.update()
 
@@ -132,21 +131,12 @@ class World():
             points = CHUNK_SIZE**2 * 4
             vertex_data = []
             texture_coords = []
-            #test =(0.81787109375, 0.00048828125, 0.0, 0.84912109375, 0.00048828125, 0.0, 0.84912109375, 0.03173828125, 0.0, 0.81787109375, 0.03173828125, 0.0)
-            red = [255,0,0,255]
             for tile in chunk.tiles:
-                #print("tile:",tile)
-                temp = chunk.tiles[tile]
-                #print("hi",self.get_corners(*tile,TILE_SIZE//2))
                 vertex_data.extend(self.get_corners(*tile,TILE_SIZE))
                 texture = chunk.tiles[tile].texture_coords
-                #print(len(texture),texture)
+                
                 texture_coords.extend(texture) 
-            #texture_coords = list(filter(lambda a: a!=0.0,texture_coords))
-                 
-            #print(points,len(vertex_data),len(texture_coords))
-            #print(texture_coords)
-            #group =
+       
             vertex_list = self.batch.add(points, pyglet.gl.GL_QUADS, pyglet.sprite.SpriteGroup(assets["Grass"].owner,770,771),
                                          ('v2f/static', vertex_data),
                                          ('t3f/dynamic', texture_coords))

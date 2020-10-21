@@ -14,7 +14,7 @@ class Game(pyglet.window.Window):
         super(Game, self).__init__(1280,740, resizable=False,config =  pyglet.gl.Config(double_buffer = True,depth_size =24),vsync = False,
                                    fullscreen=False, caption="arena",)
         #engine parameters                                   
-        self.on_draw = self.event(self.on_draw)
+        #self.on_draw = self.event(self.on_draw)
         self.projection = Projection2D()     
         self.fps = pyglet.window.FPSDisplay(self)   
 
@@ -50,15 +50,7 @@ class Game(pyglet.window.Window):
             self.fps.draw()
         with self.ui_camera:
             self.ui_batch.draw()
-            #print("draw")
-    
-  
-
-    def on_key_press(self,symbol,modifiers):
-        pass
-
-    def on_key_release(self,symbol, modifiers):
-        pass
+            
     
 
 class Projection2D(pyglet.window.Projection):

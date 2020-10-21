@@ -97,13 +97,13 @@ class World_Generator:
         if self.island_enable:
             self._generate_island_map(chunk)
         return chunk
+
     def mini_map(self,pos):
         color_map = []
         x_min = int(pos[0] - CHUNK_SIZE)
-        x_max = int(pos[0] + CHUNK_SIZE)
         y_min = int(pos[1] - CHUNK_SIZE)
+        x_max = int(pos[0] + CHUNK_SIZE)
         y_max = int(pos[1] + CHUNK_SIZE)
-        print(x_max - x_min, y_max - y_min)
         for y in range(y_min,y_max):
             for x in range(x_min,x_max):
                 val = self._get_tile(x,y)
@@ -119,7 +119,8 @@ class World_Generator:
         width = x_max - x_min
         height = y_max - y_min
         imageData = pyglet.image.ImageData(width, height, 'RGB', rawData)                                                                                                                                                              
-        return imageData                                          
+        return imageData         
+
     def _generate_island_map(self,chunk):
         n = self.enclosure
 

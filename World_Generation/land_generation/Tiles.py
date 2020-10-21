@@ -6,23 +6,12 @@ from pyglet.gl import *
 from Config import *
 from Asset_loader import assets
 
-class CustomGroup(pyglet.graphics.Group):
-    def __init__(self):
-        super().__init__()
-        self.texture = GRASS.owner
-        
-    def set_state(self):
-        glEnable(self.texture.target)
-        glBindTexture(self.texture.target, self.texture.id)
-
-    def unset_state(self):
-        glDisable(self.texture.target)
-
 class Tile:
     def __init__(self,name,texture):
         """A class for tiles"""
         self.name = name
         self.texture = texture
+        self.current = False
         #self.texture_coords = texture
     
     @property
