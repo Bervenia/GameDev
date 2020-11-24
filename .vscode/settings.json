@@ -1,5 +1,7 @@
 {
     "cSpell.ignoreWords": [
+        "getsizeof",
         "pyglet"
-    ]
+    ],
+    "python.pythonPath": "C:\\Users\\ASUS\\AppData\\Local\\Programs\\Python\\Python39\\python.exe"
 }
