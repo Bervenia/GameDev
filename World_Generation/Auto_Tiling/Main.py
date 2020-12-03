@@ -54,7 +54,9 @@ class Game(pyglet.window.Window):
     def on_mouse_press(self,x, y, button, modifiers):
         pass
     def on_key_press(self,symbol,modifiers):
-        pass
+        if symbol == pyglet.window.key.W:
+            self.auto = not self.auto
+            self.render = Render(self)
     def on_key_release(self,symbol, modifiers):
         pass
     

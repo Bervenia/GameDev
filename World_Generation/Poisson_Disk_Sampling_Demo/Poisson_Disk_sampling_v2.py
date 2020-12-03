@@ -39,7 +39,7 @@ if __name__ == "__main__":
     window = pyglet.window.Window(505,505,vsync=False)
     radius = 20
     poisson = Poisson(500,500,radius)
-    #main_batch = pyglet.graphics.Batch()
+    main_batch = pyglet.graphics.Batch()
     fps_display = pyglet.window.FPSDisplay(window)
     fps_display.label.color = (255, 255, 0, 255)
     #temp = pyglet.shapes.Circle(100,100,16, color =(255,0,0), batch = main_batch)
@@ -62,8 +62,8 @@ if __name__ == "__main__":
         fps_display.draw()
         
     def update(dt):
-        pass
-        #poisson.update()
+        #pass
+        poisson.update()
         
         
 
